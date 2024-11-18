@@ -1,7 +1,7 @@
 package com.example.travel_agency.service;
 
-import com.example.travel_agency.model.Agency;
-import com.example.travel_agency.repository.AgencyRepository;
+import com.example.travel_agency.model.Tour;
+import com.example.travel_agency.repository.TourRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,10 +12,10 @@ import java.util.List;
  * Сервисный класс для управления турами агентства.
  */
 @Service
-public class AgencyService {
+public class TourService {
 
     @Autowired
-    private AgencyRepository agencyRepository;
+    private TourRepository tourRepository;
 
     /**
      * Возвращает список всех туров, опционально фильтруя по ключевому слову.
@@ -23,20 +23,20 @@ public class AgencyService {
      * @param keyword ключевое слово для поиска
      * @return список туров
      */
-    public static List<Agency> listAll(String keyword) {
+    public List<Tour> listAll(String keyword) {
         if (keyword != null && !keyword.isEmpty()) {
-            return agencyRepository.search(keyword);
+            return tourRepository.search(keyword);
         }
-        return agencyRepository.findAll();
+        return tourRepository.findAll();
     }
 
     /**
      * Сохраняет или обновляет информацию о туре.
      *
-     * @param agency объект тура для сохранения
+     * @param tour объект тура для сохранения
      */
-    public void save(Agency agency) {
-        agencyRepository.save(agency);
+    public void save(Tour tour) {
+        tourRepository.save(tour);
     }
 
     /**
@@ -45,7 +45,7 @@ public class AgencyService {
      * @param id идентификатор тура
      */
     public void delete(Long id) {
-        agencyRepository.deleteById(id);
+        tourRepository.deleteById(id);
     }
 
     /**
@@ -55,8 +55,8 @@ public class AgencyService {
      * @param endDate   конечная дата
      * @return список туров в диапазоне дат
      */
-    public List<Agency> findByStartDateRange(LocalDate startDate, LocalDate endDate) {
-        return agencyRepository.findByStartDateRange(startDate, endDate);
+    public List<Tour> findByStartDateRange(LocalDate startDate, LocalDate endDate) {
+        return tourRepository.findByStartDateRange(startDate, endDate);
     }
 
     /**
@@ -65,7 +65,7 @@ public class AgencyService {
      * @return список объектов с датами и количеством туров
      */
     public List<Object[]> getStartDateHistogramData() {
-        return agencyRepository.getStartDateHistogramData();
+        return tourRepository.getStartDateHistogramData();
     }
 
     /**
@@ -73,8 +73,8 @@ public class AgencyService {
      *
      * @return общее количество туров
      */
-    public static int getTotalTourCount() {
-        return agencyRepository.getTotalTourCount();
+    public int getTotalTourCount() {
+        return tourRepository.getTotalTourCount();
     }
 
     /**
@@ -83,6 +83,6 @@ public class AgencyService {
      * @return список объектов с датами и количеством туров
      */
     public List<Object[]> getToursPerDay() {
-        return agencyRepository.getToursPerDay();
+        return tourRepository.getToursPerDay();
     }
 }

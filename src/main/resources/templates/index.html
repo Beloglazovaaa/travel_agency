@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="base :: head('Главная страница')">
+  <!-- Дополнительные метатеги или стили -->
+</head>
+<body>
+<!-- Включаем хедер -->
+<header th:replace="base :: header"></header>
+
+<!-- Включаем слайдер на главной странице -->
+<main class="container-fluid p-0">
+  <section th:replace="base :: slider"></section>
+
+  <!-- Контент главной страницы -->
+  <section>
+    <div class="container my-5">
+      <h1 class="text-center mb-4">Добро пожаловать в ТурАгентство</h1>
+      <p class="text-center">Мы предлагаем лучшие туры по всему миру. Найдите идеальное путешествие для себя!</p>
+
+      <!-- Пример популярных туров -->
+      <h2 class="mt-5 mb-4">Популярные туры</h2>
+      <div class="row">
+        <div class="col-md-4" th:each="tour : ${popularTours}">
+          <div class="card mb-4">
+            <img th:src="@{'/images/' + tour.images[0]}" class="card-img-top" alt="Изображение тура">
+            <div class="card-body">
+              <h5 class="card-title" th:text="${tour.name}">Название тура</h5>
+              <p class="card-text" th:text="${tour.description}">Описание тура</p>
+              <a th:href="@{/tours/{id}(id=${tour.id})}" class="btn btn-primary">Подробнее</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Включаем футер -->
+<footer th:replace="base :: footer"></footer>
+
+<!-- Модальные окна -->
+<div th:replace="base :: modals"></div>
+
+<!-- Скрипты -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+

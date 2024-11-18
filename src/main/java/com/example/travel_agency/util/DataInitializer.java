@@ -1,6 +1,8 @@
 package com.example.travel_agency.util;
 
+import com.example.travel_agency.model.User;
 import com.example.travel_agency.repository.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;

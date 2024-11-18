@@ -6,7 +6,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "tours")
-public class Agency {
+public class Tour{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,9 +47,9 @@ public class Agency {
     @Column(name = "rating")
     private Double rating;
 
-    public Agency() {}
+    public Tour() {}
 
-    public Agency(String name, String description, String destination, LocalDate startDate, LocalDate endDate, int durationDays, Double pricePerPerson, int availableSeats, List<String> images, String itinerary, Double rating) {
+    public Tour(String name, String description, String destination, LocalDate startDate, LocalDate endDate, int durationDays, Double pricePerPerson, int availableSeats, List<String> images, String itinerary, Double rating) {
         this.name = name;
         this.description = description;
         this.destination = destination;
