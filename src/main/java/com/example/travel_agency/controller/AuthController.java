@@ -1,12 +1,13 @@
+// AuthController.java
+
 package com.example.travel_agency.controller;
 
-import com.example.travel_agency.model.Tour;
-import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
-
 import com.example.travel_agency.model.User;
+import com.example.travel_agency.model.Tour;
 import com.example.travel_agency.service.UserService;
 import com.example.travel_agency.service.TourService;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -47,7 +48,7 @@ public class AuthController {
             return "index";
         }
 
-        // Сохраняем пользователя с выбранной ролью
+        // Сохраняем пользователя с ролью, выбранной в форме
         userService.save(user);
 
         session.setAttribute("loggedInUser", user);
@@ -85,8 +86,6 @@ public class AuthController {
         List<Tour> listTours = tourService.listAll(null);
         model.addAttribute("listTours", listTours);
         model.addAttribute("loggedInUser", loggedInUser);
-        int totalTourCount = tourService.getTotalTourCount();
-        model.addAttribute("totalTourCount", totalTourCount);
+        // Вы можете добавить другие необходимые атрибуты для главной страницы
     }
 }
-

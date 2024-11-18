@@ -1,0 +1,56 @@
+<!-- tourDetails.html -->
+
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{base :: head(${tour.name})}"></head>
+<body>
+<header th:replace="~{base :: header}"></header>
+<main class="container my-4">
+  <h1 th:text="${tour.name}"></h1>
+  <div class="row">
+    <div class="col-md-8">
+      <!-- Детали тура -->
+      <p th:text="${tour.description}"></p>
+      <p><strong>Цена:</strong> <span th:text="${tour.pricePerPerson} + ' ₽ на человека'"></span></p>
+      <p><strong>Длительность:</strong> <span th:text="${tour.durationDays} + ' дней'"></span></p>
+      <!-- Другие детали тура -->
+    </div>
+    <div class="col-md-4">
+      <!-- Отзывы -->
+      <h3>Отзывы</h3>
+      <div th:each="review : ${reviews}">
+        <p><strong th:text="${review.user.username}"></strong> (<span th:text="${review.rating} + '/5'"></span>)</p>
+        <p th:text="${review.comment}"></p>
+        <hr>
+      </div>
+      <!-- Форма добавления отзыва -->
+      <div th:if="${loggedInUser != null}">
+        <h4>Оставить отзыв</h4>
+        <form th:action="@{/addReview}" method="post">
+          <input type="hidden" name="tourId" th:value="${tour.id}">
+          <div class="mb-3">
+            <label for="rating" class="form-label">Рейтинг</label>
+            <select name="rating" id="rating" class="form-select" required>
+              <option value="5">5 - Отлично</option>
+              <option value="4">4 - Хорошо</option>
+              <option value="3">3 - Нормально</option>
+              <option value="2">2 - Плохо</option>
+              <option value="1">1 - Ужасно</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="comment" class="form-label">Комментарий</label>
+            <textarea name="comment" id="comment" class="form-control" rows="3" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Отправить отзыв</button>
+        </form>
+      </div>
+      <div th:if="${loggedInUser == null}">
+        <p>Чтобы оставить отзыв, <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal">войдите в систему</a>.</p>
+      </div>
+    </div>
+  </div>
+</main>
+<footer class="footer bg-dark text-light text-center py-3" th:fragment="footer">
+  <p>&copy; 2024 ТурАгентство. Все права защищены.</p>
+</footer>

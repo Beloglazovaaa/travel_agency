@@ -1,14 +1,14 @@
+// UserService.java
+
 package com.example.travel_agency.service;
 
 import com.example.travel_agency.model.User;
 import com.example.travel_agency.repository.UserRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
 
 @Service
 public class UserService {
@@ -42,4 +42,3 @@ public class UserService {
         userRepository.deleteById(id);
     }
 }
-

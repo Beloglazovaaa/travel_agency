@@ -1,3 +1,5 @@
+// User.java
+
 package com.example.travel_agency.model;
 
 import jakarta.persistence.*;
@@ -26,11 +28,10 @@ public class User {
     @Column(nullable = false)
     private String role; // Например, "ADMIN", "AGENT", "USER"
 
-    // Конструктор по умолчанию
+    // Конструкторы
     public User() {
     }
 
-    // Конструктор с параметрами
     public User(String username, String password, String role) {
         this.username = username;
         this.password = password;
@@ -38,7 +39,6 @@ public class User {
     }
 
     // Геттеры и сеттеры
-
     public Long getId() {
         return id;
     }

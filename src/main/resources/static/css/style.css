@@ -1,0 +1,31 @@
+.carousel-item {
+    height: 30rem;
+}
+
+.carousel-item img {
+    height: 400px; /* Задайте желаемую высоту */
+    object-fit: cover; /* Картинка обрезается, сохраняя пропорции */
+    width: 100%; /* Убедитесь, что изображение занимает всю ширину */
+}
+
+
+.carousel-caption {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 75%;
+}
+
+.my-carousel h5 {
+    font-size: 40px;
+}
+
+.my-carousel p {
+    font-size: 20px;
+}
+
+.footer {
+    background-color: #343a40;
+}
