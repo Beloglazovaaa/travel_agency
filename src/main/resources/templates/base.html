@@ -1,4 +1,3 @@
-<!-- base.html -->
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head th:fragment="head(titleText)">
@@ -22,14 +21,36 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <!-- Общие ссылки -->
           <li class="nav-item">
             <a class="nav-link" th:href="@{/}" th:classappend="${page == 'home'} ? 'active' : ''">Главная</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" th:href="@{/tours}" th:classappend="${page == 'tours'} ? 'active' : ''">Туры</a>
           </li>
-          <!-- Добавьте другие ссылки навигации по необходимости -->
+
+          <!-- Ссылки для AGENT и ADMIN -->
+          <li class="nav-item" th:if="${loggedInUser != null and (loggedInUser.role == 'AGENT' or loggedInUser.role == 'ADMIN')}">
+            <a class="nav-link" th:href="@{/clients}" th:classappend="${page == 'clients'} ? 'active' : ''">Клиенты</a>
+          </li>
+
+          <!-- Ссылка только для ADMIN -->
+          <li class="nav-item" th:if="${loggedInUser != null and loggedInUser.role == 'ADMIN'}">
+            <a class="nav-link" th:href="@{/admin}" th:classappend="${page == 'admin'} ? 'active' : ''">Админ панель</a>
+          </li>
+
+          <!-- Ссылка только для AGENT -->
+          <li class="nav-item" th:if="${loggedInUser != null and loggedInUser.role == 'AGENT'}">
+            <a class="nav-link" th:href="@{/agent}" th:classappend="${page == 'agent'} ? 'active' : ''">Панель агента</a>
+          </li>
+
+          <!-- Ссылка для USER -->
+          <li class="nav-item" th:if="${loggedInUser != null and loggedInUser.role == 'USER'}">
+            <a class="nav-link" th:href="@{/myBookings}" th:classappend="${page == 'myBookings'} ? 'active' : ''">Мои бронирования</a>
+          </li>
         </ul>
+
+
         <!-- User Authentication Links -->
         <ul class="navbar-nav ms-auto">
           <li class="nav-item" th:if="${loggedInUser != null}">
@@ -106,7 +127,6 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
           </div>
           <div class="modal-body">
-            <!-- Поля формы авторизации -->
             <div class="mb-3">
               <label for="loginUsername" class="form-label">Имя пользователя</label>
               <input type="text" class="form-control" id="loginUsername" name="username" required>
@@ -115,7 +135,6 @@
               <label for="loginPassword" class="form-label">Пароль</label>
               <input type="password" class="form-control" id="loginPassword" name="password" required>
             </div>
-            <!-- Вывод ошибок авторизации -->
             <div th:if="${loginError}" class="alert alert-danger" th:text="${loginError}"></div>
           </div>
           <div class="modal-footer">
@@ -136,7 +155,6 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
           </div>
           <div class="modal-body">
-            <!-- Поля формы регистрации -->
             <div class="mb-3">
               <label for="registerUsername" class="form-label">Имя пользователя</label>
               <input type="text" class="form-control" id="registerUsername" name="username" required>
@@ -153,7 +171,6 @@
                 <option value="ADMIN">Администратор</option>
               </select>
             </div>
-            <!-- Вывод ошибок регистрации -->
             <div th:if="${registrationError}" class="alert alert-danger" th:text="${registrationError}"></div>
           </div>
           <div class="modal-footer">
@@ -170,9 +187,7 @@
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         crossorigin="anonymous"></script>
 
-<!-- Добавляем скрипт для автоматического открытия модальных окон при ошибках -->
 <script th:inline="javascript">
-  /*<![CDATA[*/
   document.addEventListener('DOMContentLoaded', function() {
     var loginError = /*[[${loginError != null}]]*/ false;
     var registrationError = /*[[${registrationError != null}]]*/ false;
@@ -185,8 +200,8 @@
       registerModal.show();
     }
   });
-  /*]]>*/
 </script>
 
 </body>
 </html>
+
