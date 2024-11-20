@@ -9,6 +9,10 @@ import java.time.LocalDateTime;
 @Table(name = "bookings")
 public class Booking {
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "client_id")
+    private Client client;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

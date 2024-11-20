@@ -1,16 +1,25 @@
 package com.example.travel_agency.model;
 
 import jakarta.persistence.*;
+import lombok.Setter;
+
 import java.time.LocalDate;
 import java.util.List;
 
 @Entity
 @Table(name = "tours")
-public class Tour{
+public class Tour {
 
+    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @OneToMany(mappedBy = "tour")
+    private List<Booking> bookings;
+
+    @OneToMany(mappedBy = "tour")
+    private List<Review> reviews;
 
     @Column(name = "tour_name", nullable = false)
     private String name;
@@ -64,12 +73,29 @@ public class Tour{
     }
 
     // Getters and Setters
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public List<Booking> getBookings() {
+        return bookings;
+    }
+
+    public void setBookings(List<Booking> bookings) {
+        this.bookings = bookings;
+    }
+
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
     }
 
     public String getName() {
@@ -86,14 +112,6 @@ public class Tour{
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getDestination() {
-        return destination;
-    }
-
-    public void setDestination(String destination) {
-        this.destination = destination;
     }
 
     public LocalDate getStartDate() {
@@ -159,6 +177,7 @@ public class Tour{
     public void setRating(Double rating) {
         this.rating = rating;
     }
+
 
     @Override
     public String toString() {

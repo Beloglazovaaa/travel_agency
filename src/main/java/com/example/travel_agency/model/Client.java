@@ -11,6 +11,11 @@ public class Client {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @OneToOne(mappedBy = "client")
+    private Booking booking;
+
+
+
     private String name;
     private String email;
     private String phone;
