@@ -1,23 +1,16 @@
-// AuthController.java
-
 package com.example.travel_agency.controller;
 
+import ch.qos.logback.core.model.Model;
 import com.example.travel_agency.model.User;
-import com.example.travel_agency.model.Tour;
 import com.example.travel_agency.service.UserService;
-import com.example.travel_agency.service.TourService;
 import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.List;
 
 @Controller
 public class AuthController {
@@ -25,34 +18,16 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private TourService tourService;
-
     @PostMapping("/register")
-    public String registerUser(@Valid @ModelAttribute("user") User user,
-                               BindingResult result,
-                               Model model,
-                               HttpSession session,
-                               RedirectAttributes redirectAttributes) {
-        if (result.hasErrors()) {
-            model.addAttribute("user", user);
-            addHomePageAttributes(model, session);
-            model.addAttribute("registrationError", "Ошибка регистрации");
-            return "index";
-        }
-
+    public String registerUser(@ModelAttribute("user") User user, HttpSession session, RedirectAttributes redirectAttributes) {
         if (userService.findByUsername(user.getUsername()) != null) {
-            model.addAttribute("registrationError", "Пользователь с таким именем уже существует");
-            model.addAttribute("user", user);
-            addHomePageAttributes(model, session);
-            return "index";
+            redirectAttributes.addFlashAttribute("errorMessage", "Пользователь уже существует");
+            return "redirect:/register";
         }
 
-        // Сохраняем пользователя с ролью, выбранной в форме
         userService.save(user);
-
         session.setAttribute("loggedInUser", user);
-        redirectAttributes.addFlashAttribute("actionMessage", "Регистрация прошла успешно");
+        redirectAttributes.addFlashAttribute("successMessage", "Регистрация прошла успешно");
         return "redirect:/";
     }
 
@@ -67,25 +42,18 @@ public class AuthController {
             redirectAttributes.addFlashAttribute("actionMessage", "Вход выполнен успешно");
             return "redirect:/";
         } else {
-            model.addAttribute("loginError", "Неверное имя пользователя или пароль");
-            model.addAttribute("user", new User());
-            addHomePageAttributes(model, session);
-            return "index";
+            redirectAttributes.addFlashAttribute("errorMessage", "Неправильный логин или пароль");
+            model.addText("user");
+            redirectAttributes.
+                    addFlashAttribute("actionMessage", "Вход выполнен успешно");
+            return "redirect:/";
         }
     }
 
-    @GetMapping("/logout")
-    public String logoutUser(HttpSession session, RedirectAttributes redirectAttributes) {
-        session.invalidate();
-        redirectAttributes.addFlashAttribute("actionMessage", "Вы успешно вышли из системы");
-        return "redirect:/";
-    }
 
-    private void addHomePageAttributes(Model model, HttpSession session) {
-        User loggedInUser = (User) session.getAttribute("loggedInUser");
-        List<Tour> listTours = tourService.listAll(null);
-        model.addAttribute("listTours", listTours);
-        model.addAttribute("loggedInUser", loggedInUser);
-        // Вы можете добавить другие необходимые атрибуты для главной страницы
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/";
     }
 }

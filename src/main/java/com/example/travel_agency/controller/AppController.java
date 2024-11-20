@@ -210,4 +210,25 @@ public class AppController {
         return "tourDetails";
     }
 
+    @GetMapping("/admin")
+    public String adminPage(HttpSession session, RedirectAttributes redirectAttributes) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser == null || !"ADMIN".equalsIgnoreCase(loggedInUser.getRole())) {
+            redirectAttributes.addFlashAttribute("errorMessage", "У вас нет доступа к этой странице");
+            return "redirect:/";
+        }
+        return "adminPage";
+    }
+
+    @GetMapping("/agent")
+    public String agentPage(HttpSession session, RedirectAttributes redirectAttributes) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser == null || !"AGENT".equalsIgnoreCase(loggedInUser.getRole())) {
+            redirectAttributes.addFlashAttribute("errorMessage", "У вас нет доступа к этой странице");
+            return "redirect:/";
+        }
+        return "agentPage";
+    }
+
+
 }
