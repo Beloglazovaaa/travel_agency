@@ -50,7 +50,7 @@
 <div class="modal fade" id="addTourModal" tabindex="-1" aria-labelledby="addTourModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form th:action="@{/agent/saveTour}" method="post">
+            <form th:action="@{/agent/saveTour}" method="post" enctype="multipart/form-data">
                 <div class="modal-header">
                     <h5 class="modal-title" id="addTourModalLabel">Добавить Тур</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
@@ -81,12 +81,17 @@
                         <input type="date" class="form-control" id="endDate" name="endDate" required>
                     </div>
                     <div class="mb-3">
+                        <label for="pricePerPerson" class="form-label">Цена за человека</label>
+                        <input type="number" step="0.01" class="form-control" id="pricePerPerson" name="pricePerPerson" required>
+                    </div>
+
+                    <div class="mb-3">
                         <label for="availableSeats" class="form-label">Количество мест</label>
                         <input type="number" class="form-control" id="availableSeats" name="availableSeats" required>
                     </div>
                     <div class="mb-3">
-                        <label for="image" class="form-label">Изображение тура</label>
-                        <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                        <label for="imageFiles" class="form-label">Изображения тура</label>
+                        <input type="file" class="form-control" id="imageFiles" name="imageFiles" accept="image/*" multiple>
                     </div>
                 </div>
                 <div class="modal-footer">
