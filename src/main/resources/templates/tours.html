@@ -2,39 +2,47 @@
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{base :: head('Туры')}"></head>
 <body>
-<header th:replace="~{base :: header}"></header>
+<header th:replace="~{base :: header}">
+  <link th:href="@{/css/style.css}" rel="stylesheet">
+</header>
 <main class="container my-4">
   <h1 class="text-center my-4">Наши Туры</h1>
 
-  <!-- Поиск и сортировка -->
-  <div class="mb-3 d-flex justify-content-between">
-    <div>
-      <!-- Кнопка добавления тура для админов и агентов -->
-      <div th:if="${loggedInUser != null and (loggedInUser.role == 'ADMIN' or loggedInUser.role == 'AGENT')}">
-        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addTourModal">Добавить тур</button>
+  <div class="search-filters my-4 p-3 bg-light rounded shadow-sm d-flex justify-content-between align-items-center">
+    <form th:action="@{/tours}" method="get" class="row g-3 align-items-center w-100">
+      <!-- Поле ввода города -->
+      <div class="col">
+        <label for="cityInput" class="form-label visually-hidden">Город</label>
+        <input type="text" id="cityInput" name="city" class="form-control text-center" placeholder="Город" th:value="${city}">
       </div>
-    </div>
-    <!-- Форма поиска -->
-    <div>
-      <form th:action="@{/tours}" method="get" class="d-inline">
-        <input type="text" name="keyword" placeholder="Поиск..." class="form-control d-inline-block w-auto" th:value="${keyword}">
-        <button type="submit" class="btn btn-primary">Поиск</button>
-      </form>
-    </div>
-    <form th:action="@{/tours}" method="get" class="d-flex gap-2">
-      <input type="text" name="keyword" placeholder="Поиск..." class="form-control" th:value="${keyword}">
-      <select name="sortBy" class="form-select">
-        <option value="">Без сортировки</option>
-        <option value="price" th:selected="${sortBy == 'price'}">Цена</option>
-        <option value="startDate" th:selected="${sortBy == 'startDate'}">Дата начала</option>
-        <option value="rating" th:selected="${sortBy == 'rating'}">Рейтинг</option>
-      </select>
-      <button type="submit" class="btn btn-primary">Применить</button>
+
+      <!-- Поле ввода даты -->
+      <div class="col">
+        <label for="dateInput" class="form-label visually-hidden">Дата вылета</label>
+        <input type="date" id="dateInput" name="startDate" class="form-control text-center" th:value="${startDate}">
+      </div>
+
+      <!-- Поле ввода длительности -->
+      <div class="col">
+        <label for="durationInput" class="form-label visually-hidden">Длительность</label>
+        <input type="text" id="durationInput" name="duration" class="form-control text-center" placeholder="Количество дней" th:value="${duration}">
+      </div>
+
+      <!-- Поле ввода количества человек -->
+      <div class="col">
+        <label for="peopleInput" class="form-label visually-hidden">Количество человек</label>
+        <input type="text" id="peopleInput" name="people" class="form-control text-center" placeholder="Количество человек" th:value="${people}">
+      </div>
+
+      <!-- Кнопка поиска -->
+      <div class="col">
+        <button type="submit" class="btn btn-primary w-100">Поиск</button>
+      </div>
     </form>
-    <div th:if="${loggedInUser != null and (loggedInUser.role == 'ADMIN' or loggedInUser.role == 'AGENT')}">
-      <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addTourModal">Добавить тур</button>
-    </div>
   </div>
+
+
+
 
   <!-- Список туров -->
   <div class="row row-cols-1 row-cols-md-3 g-4">
