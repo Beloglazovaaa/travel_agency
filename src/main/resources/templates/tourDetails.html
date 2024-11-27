@@ -13,6 +13,8 @@
       <p th:text="${tour.description}"></p>
       <p><strong>Цена:</strong> <span th:text="${tour.pricePerPerson} + ' ₽ на человека'"></span></p>
       <p><strong>Длительность:</strong> <span th:text="${tour.durationDays} + ' дней'"></span></p>
+      <img th:src="@{'/uploads/' + ${tour.images[0]}}" class="img-fluid mb-4" alt="Фото тура">
+
       <!-- Другие детали тура -->
     </div>
     <div class="col-md-4">
