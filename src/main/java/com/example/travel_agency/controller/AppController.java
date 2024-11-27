@@ -77,25 +77,35 @@ public class AppController {
     @PostMapping("/saveTour")
     public String saveTour(@ModelAttribute("tour") Tour tour, HttpSession session, RedirectAttributes redirectAttributes) {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
+        // Проверяем, что пользователь авторизован и имеет права агента или администратора
         if (loggedInUser == null || (!"ADMIN".equalsIgnoreCase(loggedInUser.getRole()) && !"AGENT".equalsIgnoreCase(loggedInUser.getRole()))) {
+            redirectAttributes.addFlashAttribute("errorMessage", "У вас нет прав для выполнения этого действия");
             return "redirect:/";
         }
+
+        // Сохранение тура
         tourService.save(tour);
-        redirectAttributes.addFlashAttribute("actionMessage", "Тур успешно сохранён");
+        redirectAttributes.addFlashAttribute("successMessage", "Тур успешно сохранён");
         return "redirect:/tours";
     }
+
 
     // Удаление тура
     @PostMapping("/deleteTour")
     public String deleteTour(@RequestParam("id") Long id, HttpSession session, RedirectAttributes redirectAttributes) {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
+        // Проверяем права пользователя
         if (loggedInUser == null || !"ADMIN".equalsIgnoreCase(loggedInUser.getRole())) {
+            redirectAttributes.addFlashAttribute("errorMessage", "У вас нет прав для удаления туров");
             return "redirect:/";
         }
+
+        // Удаление тура
         tourService.delete(id);
-        redirectAttributes.addFlashAttribute("actionMessage", "Тур успешно удалён");
+        redirectAttributes.addFlashAttribute("successMessage", "Тур успешно удалён");
         return "redirect:/tours";
     }
+
 
     // Фильтрация туров по дате начала
     @GetMapping("/filterByStartDate")
@@ -118,19 +128,20 @@ public class AppController {
 
     // Страница клиентов
     @GetMapping("/clients")
-    public String viewClientsPage(Model model, HttpSession session) {
+    public String viewClientsPage(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
+        // Только администратор или агент имеют доступ
         if (loggedInUser == null || (!"ADMIN".equalsIgnoreCase(loggedInUser.getRole()) && !"AGENT".equalsIgnoreCase(loggedInUser.getRole()))) {
+            redirectAttributes.addFlashAttribute("errorMessage", "У вас нет прав для доступа к клиентам");
             return "redirect:/";
         }
+
+        // Отображение списка клиентов
         model.addAttribute("loggedInUser", loggedInUser);
-        model.addAttribute("page", "clients");
-
-        List<Client> clients = clientService.getAllClients();
-        model.addAttribute("clients", clients);
-
+        model.addAttribute("clients", clientService.getAllClients());
         return "clients";
     }
+
 
     // Сохранение клиента
     @PostMapping("/saveClient")
@@ -156,31 +167,22 @@ public class AppController {
         return "redirect:/clients";
     }
 
-    // Добавить методы
     @PostMapping("/bookTour")
     public String bookTour(@RequestParam("tourId") Long tourId, HttpSession session, RedirectAttributes redirectAttributes) {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
-        if (loggedInUser == null) {
-            redirectAttributes.addFlashAttribute("loginError", "Необходимо войти в систему для бронирования тура");
+        // Проверяем, что пользователь авторизован и имеет роль USER
+        if (loggedInUser == null || !"USER".equalsIgnoreCase(loggedInUser.getRole())) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Только зарегистрированные пользователи могут бронировать туры");
             return "redirect:/";
         }
+
+        // Получение тура и создание бронирования
         Tour tour = tourService.findById(tourId);
         bookingService.bookTour(loggedInUser, tour);
-        redirectAttributes.addFlashAttribute("actionMessage", "Тур успешно забронирован");
+        redirectAttributes.addFlashAttribute("successMessage", "Тур успешно забронирован");
         return "redirect:/myBookings";
     }
 
-    @GetMapping("/myBookings")
-    public String viewMyBookings(Model model, HttpSession session) {
-        User loggedInUser = (User) session.getAttribute("loggedInUser");
-        if (loggedInUser == null) {
-            return "redirect:/";
-        }
-        List<Booking> bookings = bookingService.getBookingsByUser(loggedInUser);
-        model.addAttribute("bookings", bookings);
-        model.addAttribute("loggedInUser", loggedInUser);
-        return "myBookings";
-    }
 
     @PostMapping("/addReview")
     public String addReview(@RequestParam("tourId") Long tourId,
@@ -210,14 +212,15 @@ public class AppController {
         return "tourDetails";
     }
 
-    @GetMapping("/admin")
-    public String adminPage(HttpSession session, RedirectAttributes redirectAttributes) {
+
+    @GetMapping("/user")
+    public String userPage(HttpSession session, RedirectAttributes redirectAttributes) {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
-        if (loggedInUser == null || !"ADMIN".equalsIgnoreCase(loggedInUser.getRole())) {
+        if (loggedInUser == null || !"USER".equalsIgnoreCase(loggedInUser.getRole())) {
             redirectAttributes.addFlashAttribute("errorMessage", "У вас нет доступа к этой странице");
             return "redirect:/";
         }
-        return "adminPage";
+        return "user";
     }
 
     @GetMapping("/agent")
@@ -227,7 +230,63 @@ public class AppController {
             redirectAttributes.addFlashAttribute("errorMessage", "У вас нет доступа к этой странице");
             return "redirect:/";
         }
-        return "agentPage";
+        return "agent";
+    }
+
+    @GetMapping("/admin")
+    public String adminPage(HttpSession session, RedirectAttributes redirectAttributes) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser == null || !"ADMIN".equalsIgnoreCase(loggedInUser.getRole())) {
+            redirectAttributes.addFlashAttribute("errorMessage", "У вас нет доступа к этой странице");
+            return "redirect:/";
+        }
+        return "admin";
+    }
+
+    @GetMapping("/agentTours")
+    public String viewAgentTours(Model model, HttpSession session) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser == null || !"AGENT".equalsIgnoreCase(loggedInUser.getRole())) {
+            return "redirect:/";
+        }
+        model.addAttribute("loggedInUser", loggedInUser);
+        model.addAttribute("page", "agentTours");
+
+        List<Tour> tours = tourService.findToursByAgent(loggedInUser);
+        model.addAttribute("listTours", tours);
+
+        return "tours";
+    }
+
+    @GetMapping("/adminTours")
+    public String viewAllToursForAdmin(Model model, HttpSession session) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser == null || !"ADMIN".equalsIgnoreCase(loggedInUser.getRole())) {
+            return "redirect:/";
+        }
+        model.addAttribute("loggedInUser", loggedInUser);
+        model.addAttribute("page", "adminTours");
+
+        List<Tour> tours = tourService.listAll(null); // Без фильтров - полный список
+        model.addAttribute("listTours", tours);
+
+        return "tours";
+    }
+
+    @GetMapping("/myBookings")
+    public String viewMyBookings(Model model, HttpSession session) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser == null || !"USER".equalsIgnoreCase(loggedInUser.getRole())) {
+            return "redirect:/";
+        }
+
+        List<Booking> bookings = bookingService.getBookingsByUser(loggedInUser);
+
+        model.addAttribute("loggedInUser", loggedInUser);
+        model.addAttribute("bookings", bookings);
+        model.addAttribute("noBookingsMessage", bookings.isEmpty() ? "У вас пока нет бронирований" : null);
+
+        return "myBookings";
     }
 
 

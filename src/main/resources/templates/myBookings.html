@@ -1,5 +1,3 @@
-<!-- myBookings.html -->
-
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{base :: head('Мои бронирования')}"></head>
@@ -7,29 +5,40 @@
 <header th:replace="~{base :: header}"></header>
 <main class="container my-4">
   <h1 class="text-center">Мои бронирования</h1>
-  <div class="row">
-    <div class="col-12">
-      <table class="table table-striped">
-        <thead>
-        <tr>
-          <th>Тур</th>
-          <th>Дата бронирования</th>
-          <th>Действия</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="booking : ${bookings}">
-          <td th:text="${booking.tour.name}"></td>
-          <td th:text="${#dates.format(booking.bookingDate, 'dd.MM.yyyy HH:mm')}"></td>
-          <td>
-            <!-- Возможные действия, например, отменить бронирование -->
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
+
+  <!-- Проверка на наличие бронирований -->
+  <div th:if="${bookings.isEmpty()}" class="alert alert-info text-center">
+    У вас пока нет бронирований.
+  </div>
+
+  <!-- Таблица бронирований -->
+  <div th:if="${!bookings.isEmpty()}">
+    <table class="table table-striped">
+      <thead>
+      <tr>
+        <th>Тур</th>
+        <th>Дата бронирования</th>
+        <th>Действия</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="booking : ${bookings}">
+        <td th:text="${booking.tour.name}"></td>
+        <td th:text="${#dates.format(booking.bookingDate, 'dd.MM.yyyy HH:mm')}"></td>
+        <td>
+          <!-- Кнопка отмены бронирования -->
+          <form th:action="@{/cancelBooking}" method="post" th:if="${booking.tour.startDate.isAfter(#dates.createNow().toLocalDate())}">
+            <input type="hidden" name="bookingId" th:value="${booking.id}">
+            <button type="submit" class="btn btn-danger btn-sm">Отменить</button>
+          </form>
+          <span th:if="${!booking.tour.startDate.isAfter(#dates.createNow().toLocalDate())}" class="text-muted">Отмена недоступна</span>
+        </td>
+      </tr>
+      </tbody>
+    </table>
   </div>
 </main>
 <footer th:replace="~{base :: footer}"></footer>
 </body>
 </html>
+

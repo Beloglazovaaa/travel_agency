@@ -20,35 +20,53 @@ public class AuthController {
 
     @PostMapping("/register")
     public String registerUser(@ModelAttribute("user") User user, HttpSession session, RedirectAttributes redirectAttributes) {
-        if (userService.findByUsername(user.getUsername()) != null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Пользователь уже существует");
-            return "redirect:/register";
+        // Проверка на пустые поля
+        if (user.getUsername() == null || user.getUsername().isBlank() ||
+                user.getPassword() == null || user.getPassword().isBlank() ||
+                user.getRole() == null || user.getRole().isBlank()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Все поля обязательны для заполнения");
+            return "redirect:/";
         }
 
+        // Проверка минимальной длины имени пользователя и пароля
+        if (user.getUsername().length() < 4 || user.getPassword().length() < 4) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Имя пользователя и пароль должны быть не менее 4 символов");
+            return "redirect:/";
+        }
+
+        // Проверка на уникальность имени пользователя
+        if (userService.findByUsername(user.getUsername()) != null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Пользователь уже существует");
+            return "redirect:/";
+        }
+
+        // Сохранение пользователя с хешированием пароля
         userService.save(user);
         session.setAttribute("loggedInUser", user);
         redirectAttributes.addFlashAttribute("successMessage", "Регистрация прошла успешно");
         return "redirect:/";
     }
 
+
+
     @PostMapping("/login")
-    public String loginUser(@ModelAttribute("user") User user,
-                            HttpSession session,
-                            Model model,
-                            RedirectAttributes redirectAttributes) {
+    public String loginUser(@ModelAttribute("user") User user, HttpSession session, RedirectAttributes redirectAttributes) {
         User existingUser = userService.findByUsername(user.getUsername());
         if (existingUser != null && userService.checkPassword(existingUser, user.getPassword())) {
             session.setAttribute("loggedInUser", existingUser);
-            redirectAttributes.addFlashAttribute("actionMessage", "Вход выполнен успешно");
-            return "redirect:/";
-        } else {
-            redirectAttributes.addFlashAttribute("errorMessage", "Неправильный логин или пароль");
-            model.addText("user");
-            redirectAttributes.
-                    addFlashAttribute("actionMessage", "Вход выполнен успешно");
-            return "redirect:/";
+            // Перенаправление в зависимости от роли
+            if ("ADMIN".equalsIgnoreCase(existingUser.getRole())) {
+                return "redirect:/admin";
+            } else if ("AGENT".equalsIgnoreCase(existingUser.getRole())) {
+                return "redirect:/agent";
+            } else if ("USER".equalsIgnoreCase(existingUser.getRole())) {
+                return "redirect:/user";
+            }
         }
+        redirectAttributes.addFlashAttribute("errorMessage", "Неправильный логин или пароль");
+        return "redirect:/";
     }
+
 
 
     @GetMapping("/logout")

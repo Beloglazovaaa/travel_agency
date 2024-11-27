@@ -6,6 +6,11 @@
 <body>
 <header th:replace="~{base :: header}"></header>
 <main class="container-fluid p-0">
+  <div class="container my-4">
+    <!-- Вывод сообщений -->
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+  </div>
   <section th:replace="~{base :: slider}"></section>
 
   <!-- Контент главной страницы -->

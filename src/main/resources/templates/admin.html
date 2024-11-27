@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{base :: head('Панель администратора')}"></head>
+<body>
+<header th:replace="~{base :: header}"></header>
+<main class="container my-4">
+  <h1 class="text-center mb-4">Администраторская панель</h1>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Управление турами</h5>
+          <p>Посмотрите все доступные туры, редактируйте их или добавляйте новые.</p>
+          <a href="/admin/tours" class="btn btn-primary w-100">Управление турами</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Управление пользователями</h5>
+          <p>Добавляйте и редактируйте пользователей, просматривайте статистику.</p>
+          <a href="/admin/users" class="btn btn-primary w-100">Управление пользователями</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+<footer th:replace="~{base :: footer}"></footer>
+</body>
+</html>

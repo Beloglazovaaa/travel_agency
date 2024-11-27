@@ -1,154 +1,143 @@
-<!-- tours.html -->
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{base :: head('Туры')}"></head>
 <body>
 <header th:replace="~{base :: header}"></header>
 <main class="container my-4">
-  <div th:fragment="content">
-    <h1 class="text-center my-4">Наши Туры</h1>
+  <h1 class="text-center my-4">Наши Туры</h1>
 
-    <!-- Кнопка для добавления тура и форма поиска -->
-    <div class="mb-3 d-flex justify-content-between">
-      <div>
-        <!-- Кнопка добавления тура для админов и агентов -->
-        <div th:if="${loggedInUser != null and (loggedInUser.role == 'ADMIN' or loggedInUser.role == 'AGENT')}">
-          <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addTourModal">Добавить тур</button>
-        </div>
-      </div>
-      <!-- Форма поиска -->
-      <div>
-        <form th:action="@{/tours}" method="get" class="d-inline">
-          <input type="text" name="keyword" placeholder="Поиск..." class="form-control d-inline-block w-auto" th:value="${keyword}">
-          <button type="submit" class="btn btn-primary">Поиск</button>
-        </form>
+  <!-- Поиск и сортировка -->
+  <div class="mb-3 d-flex justify-content-between">
+    <div>
+      <!-- Кнопка добавления тура для админов и агентов -->
+      <div th:if="${loggedInUser != null and (loggedInUser.role == 'ADMIN' or loggedInUser.role == 'AGENT')}">
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addTourModal">Добавить тур</button>
       </div>
     </div>
-
-    <!-- Сортировка туров -->
-    <div class="mb-3">
+    <!-- Форма поиска -->
+    <div>
       <form th:action="@{/tours}" method="get" class="d-inline">
-        <input type="hidden" name="keyword" th:value="${keyword}">
-        <label for="sortBy">Сортировать по:</label>
-        <select name="sortBy" id="sortBy" class="form-select d-inline-block w-auto">
-          <option value="">Без сортировки</option>
-          <option value="price" th:selected="${sortBy == 'price'}">Цене</option>
-          <option value="startDate" th:selected="${sortBy == 'startDate'}">Дате начала</option>
-          <option value="rating" th:selected="${sortBy == 'rating'}">Рейтингу</option>
-        </select>
-        <button type="submit" class="btn btn-primary">Сортировать</button>
+        <input type="text" name="keyword" placeholder="Поиск..." class="form-control d-inline-block w-auto" th:value="${keyword}">
+        <button type="submit" class="btn btn-primary">Поиск</button>
       </form>
     </div>
+    <form th:action="@{/tours}" method="get" class="d-flex gap-2">
+      <input type="text" name="keyword" placeholder="Поиск..." class="form-control" th:value="${keyword}">
+      <select name="sortBy" class="form-select">
+        <option value="">Без сортировки</option>
+        <option value="price" th:selected="${sortBy == 'price'}">Цена</option>
+        <option value="startDate" th:selected="${sortBy == 'startDate'}">Дата начала</option>
+        <option value="rating" th:selected="${sortBy == 'rating'}">Рейтинг</option>
+      </select>
+      <button type="submit" class="btn btn-primary">Применить</button>
+    </form>
+    <div th:if="${loggedInUser != null and (loggedInUser.role == 'ADMIN' or loggedInUser.role == 'AGENT')}">
+      <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addTourModal">Добавить тур</button>
+    </div>
+  </div>
 
-    <!-- Карточки туров -->
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-      <div class="col" th:each="tour : ${listTours}">
-        <div class="card h-100 shadow-sm">
-          <img th:src="@{'/images/' + (tour.images[0] ?: 'default.jpg')}" class="card-img-top" th:alt="${tour.name}">
-          <div class="card-body d-flex flex-column">
-            <h5 class="card-title" th:text="${tour.name}"></h5>
-            <p class="card-text text-truncate" th:text="${tour.description}"></p>
-            <p><strong>Цена:</strong> <span th:text="${tour.pricePerPerson} + ' ₽ на человека'"></span></p>
-            <p><strong>Места:</strong> <span th:text="${tour.availableSeats}"></span></p>
-            <a th:href="@{/tours/{id}(id=${tour.id})}" class="btn btn-primary mt-auto">Подробнее</a>
-            <!-- Кнопки редактирования и удаления для админов и агентов -->
-            <div class="mt-2" th:if="${loggedInUser != null && (loggedInUser.role == 'ADMIN' || loggedInUser.role == 'AGENT')}">
-              <button class="btn btn-warning me-2" data-bs-toggle="modal" th:attr="data-bs-target='#editTourModal_${tour.id}'">Редактировать</button>
-              <button class="btn btn-danger" data-bs-toggle="modal" th:attr="data-bs-target='#deleteTourModal_${tour.id}'">Удалить</button>
-            </div>
+  <!-- Список туров -->
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    <div class="col" th:each="tour : ${listTours}">
+      <div class="card h-100 shadow-sm">
+        <img th:src="@{'/images/' + (tour.images[0] ?: 'default.jpg')}" class="card-img-top" th:alt="${tour.name}">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title" th:text="${tour.name}"></h5>
+          <p class="card-text text-truncate" th:text="${tour.description}"></p>
+          <p><strong>Цена:</strong> <span th:text="${tour.pricePerPerson} + ' ₽'"></span></p>
+          <p><strong>Места:</strong> <span th:text="${tour.availableSeats}"></span></p>
+          <a th:href="@{/tours/{id}(id=${tour.id})}" class="btn btn-primary mt-auto">Подробнее</a>
+          <div class="mt-2" th:if="${loggedInUser != null and (loggedInUser.role == 'ADMIN' or loggedInUser.role == 'AGENT')}">
+            <button class="btn btn-warning me-2" data-bs-toggle="modal" th:attr="data-bs-target='#editTourModal_' + ${tour.id}">Редактировать</button>
+            <button class="btn btn-danger" data-bs-toggle="modal" th:attr="data-bs-target='#deleteTourModal_' + ${tour.id}">Удалить</button>
           </div>
         </div>
+      </div>
 
-        <!-- Модальное окно редактирования тура -->
-        <div class="modal fade" th:id="'editTourModal_' + ${tour.id}" tabindex="-1" aria-labelledby="editTourModalLabel" aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <form th:action="@{/saveTour}" method="post">
-                <div class="modal-header">
-                  <h5 class="modal-title">Редактировать тур</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+      <!-- Модальное окно редактирования тура -->
+      <div class="modal fade" th:id="'editTourModal_' + ${tour.id}" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form th:action="@{/saveTour}" method="post">
+              <div class="modal-header">
+                <h5 class="modal-title">Редактировать тур</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <input type="hidden" name="id" th:value="${tour.id}">
+                <div class="mb-3">
+                  <label class="form-label">Название</label>
+                  <input type="text" class="form-control" name="name" th:value="${tour.name}" required>
                 </div>
-                <div class="modal-body">
-                  <input type="hidden" name="id" th:value="${tour.id}">
-                  <!-- Поля для редактирования тура -->
-                  <div class="mb-3">
-                    <label class="form-label">Название тура</label>
-                    <input type="text" class="form-control" name="name" th:value="${tour.name}" required>
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label">Описание</label>
-                    <textarea class="form-control" name="description" rows="3" required th:text="${tour.description}"></textarea>
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label">Цена за человека</label>
-                    <input type="number" class="form-control" name="pricePerPerson" th:value="${tour.pricePerPerson}" required>
-                  </div>
-                  <!-- Добавьте другие необходимые поля -->
+                <div class="mb-3">
+                  <label class="form-label">Описание</label>
+                  <textarea class="form-control" name="description" required th:text="${tour.description}"></textarea>
                 </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                  <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                <div class="mb-3">
+                  <label class="form-label">Цена</label>
+                  <input type="number" class="form-control" name="pricePerPerson" th:value="${tour.pricePerPerson}" required>
                 </div>
-              </form>
-            </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+              </div>
+            </form>
           </div>
         </div>
+      </div>
 
-        <!-- Модальное окно удаления тура -->
-        <div class="modal fade" th:id="'deleteTourModal_' + ${tour.id}" tabindex="-1" aria-labelledby="deleteTourModalLabel" aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <form th:action="@{/deleteTour}" method="post">
-                <div class="modal-header">
-                  <h5 class="modal-title">Удалить тур</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
-                </div>
-                <div class="modal-body">
-                  <p>Вы уверены, что хотите удалить этот тур?</p>
-                  <input type="hidden" name="id" th:value="${tour.id}">
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                  <button type="submit" class="btn btn-danger">Удалить</button>
-                </div>
-              </form>
-            </div>
+      <!-- Модальное окно удаления тура -->
+      <div class="modal fade" th:id="'deleteTourModal_' + ${tour.id}" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form th:action="@{/deleteTour}" method="post">
+              <div class="modal-header">
+                <h5 class="modal-title">Удалить тур</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <p>Вы уверены, что хотите удалить этот тур?</p>
+                <input type="hidden" name="id" th:value="${tour.id}">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="submit" class="btn btn-danger">Удалить</button>
+              </div>
+            </form>
           </div>
         </div>
-
       </div>
     </div>
   </div>
 </main>
 
 <!-- Модальное окно добавления тура -->
-<div class="modal fade" id="addTourModal" tabindex="-1" aria-labelledby="addTourModalLabel" aria-hidden="true">
+<div class="modal fade" id="addTourModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
       <form th:action="@{/saveTour}" method="post">
         <div class="modal-header">
           <h5 class="modal-title">Добавить тур</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
-          <!-- Поля для добавления тура -->
           <div class="mb-3">
-            <label class="form-label">Название тура</label>
+            <label class="form-label">Название</label>
             <input type="text" class="form-control" name="name" required>
           </div>
           <div class="mb-3">
             <label class="form-label">Описание</label>
-            <textarea class="form-control" name="description" rows="3" required></textarea>
+            <textarea class="form-control" name="description" required></textarea>
           </div>
           <div class="mb-3">
-            <label class="form-label">Цена за человека</label>
+            <label class="form-label">Цена</label>
             <input type="number" class="form-control" name="pricePerPerson" required>
           </div>
-          <!-- Добавьте другие необходимые поля -->
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-          <button type="submit" class="btn btn-success">Добавить тур</button>
+          <button type="submit" class="btn btn-success">Добавить</button>
         </div>
       </form>
     </div>
@@ -158,4 +147,5 @@
 <footer th:replace="~{base :: footer}"></footer>
 </body>
 </html>
+
 

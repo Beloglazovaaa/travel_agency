@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{base :: head('Личный кабинет пользователя')}"></head>
+<body>
+<header th:replace="~{base :: header}"></header>
+<main class="container my-4">
+  <h1 class="text-center mb-4">Личный кабинет</h1>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Доступные туры</h5>
+          <p>Забронируйте понравившиеся туры и посмотрите доступные предложения.</p>
+          <a href="/user/tours" class="btn btn-primary w-100">Просмотр туров</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Мои бронирования</h5>
+          <p>Просмотрите свои текущие бронирования и историю.</p>
+          <a href="/user/bookings" class="btn btn-primary w-100">Мои бронирования</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+<footer th:replace="~{base :: footer}"></footer>
+</body>
+</html>

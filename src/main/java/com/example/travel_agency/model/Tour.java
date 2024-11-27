@@ -1,6 +1,7 @@
 package com.example.travel_agency.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
@@ -8,17 +9,18 @@ import java.util.List;
 
 @Entity
 @Table(name = "tours")
+@Getter
+@Setter
 public class Tour {
 
-    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "tour")
+    @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Booking> bookings;
 
-    @OneToMany(mappedBy = "tour")
+    @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews;
 
     @Column(name = "tour_name", nullable = false)
@@ -56,9 +58,13 @@ public class Tour {
     @Column(name = "rating")
     private Double rating;
 
+    @ManyToOne
+    @JoinColumn(name = "created_by", nullable = false)
+    private User createdBy; // Связь с пользователем
+
     public Tour() {}
 
-    public Tour(String name, String description, String destination, LocalDate startDate, LocalDate endDate, int durationDays, Double pricePerPerson, int availableSeats, List<String> images, String itinerary, Double rating) {
+    public Tour(String name, String description, String destination, LocalDate startDate, LocalDate endDate, int durationDays, Double pricePerPerson, int availableSeats, List<String> images, String itinerary, Double rating, User createdBy) {
         this.name = name;
         this.description = description;
         this.destination = destination;
@@ -70,114 +76,8 @@ public class Tour {
         this.images = images;
         this.itinerary = itinerary;
         this.rating = rating;
+        this.createdBy = createdBy;
     }
-
-    // Getters and Setters
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public List<Booking> getBookings() {
-        return bookings;
-    }
-
-    public void setBookings(List<Booking> bookings) {
-        this.bookings = bookings;
-    }
-
-    public List<Review> getReviews() {
-        return reviews;
-    }
-
-    public void setReviews(List<Review> reviews) {
-        this.reviews = reviews;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
-
-    public LocalDate getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
-    }
-
-    public int getDurationDays() {
-        return durationDays;
-    }
-
-    public void setDurationDays(int durationDays) {
-        this.durationDays = durationDays;
-    }
-
-    public Double getPricePerPerson() {
-        return pricePerPerson;
-    }
-
-    public void setPricePerPerson(Double pricePerPerson) {
-        this.pricePerPerson = pricePerPerson;
-    }
-
-    public int getAvailableSeats() {
-        return availableSeats;
-    }
-
-    public void setAvailableSeats(int availableSeats) {
-        this.availableSeats = availableSeats;
-    }
-
-    public List<String> getImages() {
-        return images;
-    }
-
-    public void setImages(List<String> images) {
-        this.images = images;
-    }
-
-    public String getItinerary() {
-        return itinerary;
-    }
-
-    public void setItinerary(String itinerary) {
-        this.itinerary = itinerary;
-    }
-
-    public Double getRating() {
-        return rating;
-    }
-
-    public void setRating(Double rating) {
-        this.rating = rating;
-    }
-
 
     @Override
     public String toString() {
@@ -194,6 +94,7 @@ public class Tour {
                 ", images=" + images +
                 ", itinerary='" + itinerary + '\'' +
                 ", rating=" + rating +
+                ", createdBy=" + (createdBy != null ? createdBy.getUsername() : "null") +
                 '}';
     }
 }

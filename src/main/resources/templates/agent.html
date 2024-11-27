@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{base :: head('Личный кабинет агента')}"></head>
+<body>
+<header th:replace="~{base :: header}"></header>
+<main class="container my-4">
+  <h1 class="text-center mb-4">Личный кабинет агента</h1>
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Ваши туры</h5>
+          <p>Управляйте своими турами, добавляйте и редактируйте.</p>
+          <a href="/agent/tours" class="btn btn-primary w-100">Управление турами</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Статистика</h5>
+          <p>Посмотрите статистику по вашим бронированиям и отзывам.</p>
+          <a href="/agent/statistics" class="btn btn-primary w-100">Просмотреть статистику</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Профиль</h5>
+          <p>Настройте свой профиль и обновите данные.</p>
+          <a href="/profile" class="btn btn-primary w-100">Настройки профиля</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+<footer th:replace="~{base :: footer}"></footer>
+</body>
+</html>
