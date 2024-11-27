@@ -1,6 +1,7 @@
 package com.example.travel_agency.controller;
 
 import com.example.travel_agency.model.*;
+import com.example.travel_agency.repository.TourRequestRepository;
 import com.example.travel_agency.service.*;
 import jakarta.servlet.http.HttpSession;
 
@@ -27,6 +28,11 @@ public class AppController {
 
     @Autowired
     private ReviewService reviewService;
+
+    @Autowired
+    private TourRequestRepository tourRequestRepository;
+    private TourRequestService tourRequestService;
+
 
     // Главная страница
     @GetMapping("/")
@@ -288,6 +294,42 @@ public class AppController {
 
         return "myBookings";
     }
+
+    @PostMapping("/submitRequest")
+    public String submitRequest(@RequestParam Long tourId,
+                                @RequestParam String userName,
+                                @RequestParam String userEmail,
+                                @RequestParam String userPhone,
+                                RedirectAttributes redirectAttributes) {
+        Tour tour = tourService.findById(tourId);
+        if (tour == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Тур не найден");
+            return "redirect:/tours";
+        }
+
+        TourRequest request = new TourRequest();
+        request.setTour(tour);
+        request.setUserName(userName);
+        request.setUserEmail(userEmail);
+        request.setUserPhone(userPhone);
+        request.setStatus("Новая");
+
+        tourRequestService.save(request);
+
+        redirectAttributes.addFlashAttribute("successMessage", "Ваша заявка успешно отправлена!");
+        return "redirect:/tours/" + tourId;
+    }
+
+
+    @GetMapping("/touristInfo")
+    public String touristInfo(Model model, HttpSession session) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        model.addAttribute("loggedInUser", loggedInUser);
+        model.addAttribute("page", "touristInfo");
+        return "touristInfo";
+    }
+
+
 
 
 }

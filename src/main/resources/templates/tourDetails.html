@@ -10,12 +10,43 @@
   <div class="row">
     <div class="col-md-8">
       <!-- Детали тура -->
-      <p th:text="${tour.description}"></p>
       <p><strong>Цена:</strong> <span th:text="${tour.pricePerPerson} + ' ₽ на человека'"></span></p>
       <p><strong>Длительность:</strong> <span th:text="${tour.durationDays} + ' дней'"></span></p>
       <img th:src="@{'/uploads/' + ${tour.images[0]}}" class="img-fluid mb-4" alt="Фото тура">
+      <h3>Описание тура</h3>
+      <p th:text="${tour.description}"></p>
+      <h3>Программа тура</h3>
+      <p th:text="${tour.itinerary}">Подробная программа тура.</p>
 
-      <!-- Другие детали тура -->
+      <h3>В стоимость входит</h3>
+      <ul>
+        <li>Проживание в отелях</li>
+        <li>Трансферы и транспортное обслуживание</li>
+        <li>Экскурсии с гидом</li>
+        <li>Питание по программе</li>
+      </ul>
+
+      <!-- Добавляем после кнопки "Забронировать тур" -->
+      <div class="mt-4">
+        <h3>Оставить заявку на тур</h3>
+        <form th:action="@{/submitRequest}" method="post">
+          <input type="hidden" name="tourId" th:value="${tour.id}">
+          <div class="mb-3">
+            <label for="userName" class="form-label">Ваше имя</label>
+            <input type="text" class="form-control" id="userName" name="userName" required>
+          </div>
+          <div class="mb-3">
+            <label for="userEmail" class="form-label">Ваш Email</label>
+            <input type="email" class="form-control" id="userEmail" name="userEmail" required>
+          </div>
+          <div class="mb-3">
+            <label for="userPhone" class="form-label">Ваш телефон</label>
+            <input type="tel" class="form-control" id="userPhone" name="userPhone" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Отправить заявку</button>
+        </form>
+      </div>
+
     </div>
     <div class="col-md-4">
       <!-- Отзывы -->

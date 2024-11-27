@@ -1,45 +1,48 @@
 package com.example.travel_agency.controller;
 
-import com.example.travel_agency.model.Tour;
-import com.example.travel_agency.model.User;
-import com.example.travel_agency.service.TourService;
+import com.example.travel_agency.model.*;
+import com.example.travel_agency.service.*;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.beans.PropertyEditorSupport;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.nio.file.*;
+import java.util.*;
+
 @Controller
 @RequestMapping("/agent")
 public class AgentController {
 
     private static final Logger logger = LoggerFactory.getLogger(AgentController.class);
-    private final TourService tourService;
 
-    public AgentController(TourService tourService) {
+    private final TourService tourService;
+    private final TourRequestService tourRequestService;
+    private final UserService userService;
+    private final BookingService bookingService;
+
+    @Autowired
+    public AgentController(TourService tourService, TourRequestService tourRequestService,
+                           UserService userService, BookingService bookingService) {
         this.tourService = tourService;
+        this.tourRequestService = tourRequestService;
+        this.userService = userService;
+        this.bookingService = bookingService;
     }
 
+    // Показать туры агента
     @GetMapping("/tours")
-    public String viewAgentTours(HttpSession session, Model model) {
+    public String viewAgentTours(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
-        if (loggedInUser == null) {
-            logger.error("Попытка доступа к /tours без авторизации.");
+        if (loggedInUser == null || !"AGENT".equalsIgnoreCase(loggedInUser.getRole())) {
+            redirectAttributes.addFlashAttribute("errorMessage", "У вас нет доступа к этой странице.");
             return "redirect:/login";
         }
 
@@ -49,39 +52,37 @@ public class AgentController {
         return "agentTours";
     }
 
+    // Сохранить тур
     @PostMapping("/saveTour")
     public String saveTour(@ModelAttribute("tour") Tour tour,
                            @RequestParam("imageFiles") MultipartFile[] imageFiles,
-                           HttpSession session) {
+                           HttpSession session, RedirectAttributes redirectAttributes) {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
-        if (loggedInUser == null) {
-            logger.error("Попытка сохранения тура без авторизации.");
-            throw new RuntimeException("Пользователь не авторизован.");
+        if (loggedInUser == null || !"AGENT".equalsIgnoreCase(loggedInUser.getRole())) {
+            redirectAttributes.addFlashAttribute("errorMessage", "У вас нет прав для выполнения этого действия.");
+            return "redirect:/login";
         }
 
         tour.setCreatedBy(loggedInUser);
 
         if (imageFiles != null && imageFiles.length > 0) {
             List<String> imagePaths = new ArrayList<>();
-            for (MultipartFile image : imageFiles) {
-                if (!image.isEmpty()) {
-                    try {
-                        // Генерируем уникальное имя файла
-                        String filename = UUID.randomUUID().toString() + "_" + image.getOriginalFilename();
-                        // Путь для сохранения
-                        Path uploadPath = Paths.get("uploads");
-                        Files.createDirectories(uploadPath);
-                        // Сохраняем файл
+            try {
+                Path uploadPath = Paths.get("uploads");
+                Files.createDirectories(uploadPath);
+
+                for (MultipartFile image : imageFiles) {
+                    if (!image.isEmpty()) {
+                        String filename = UUID.randomUUID() + "_" + image.getOriginalFilename();
                         Path filePath = uploadPath.resolve(filename);
                         Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-                        // Добавляем имя файла в список
                         imagePaths.add(filename);
-                    } catch (IOException e) {
-                        logger.error("Ошибка при сохранении изображения: {}", e.getMessage());
                     }
                 }
+            } catch (IOException e) {
+                logger.error("Ошибка сохранения изображения: {}", e.getMessage());
             }
-            // Инициализируем список изображений, если он null
+
             if (tour.getImages() == null) {
                 tour.setImages(new ArrayList<>());
             }
@@ -89,21 +90,80 @@ public class AgentController {
         }
 
         tourService.save(tour);
-
         logger.info("Тур успешно сохранен: {}", tour);
+        redirectAttributes.addFlashAttribute("successMessage", "Тур успешно сохранен!");
         return "redirect:/agent/tours";
     }
 
+    // Удалить тур
     @PostMapping("/deleteTour")
-    public String deleteTour(@RequestParam("id") Long id) {
-        logger.info("Удаление тура с ID: {}", id);
-        tourService.delete(id);
+    public String deleteTour(@RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
+        try {
+            tourService.delete(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Тур успешно удален!");
+        } catch (Exception e) {
+            logger.error("Ошибка удаления тура: {}", e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Ошибка удаления тура.");
+        }
         return "redirect:/agent/tours";
     }
 
+    // Просмотр заявок
+    @GetMapping("/requests")
+    public String viewRequests(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser == null || !"AGENT".equalsIgnoreCase(loggedInUser.getRole())) {
+            redirectAttributes.addFlashAttribute("errorMessage", "У вас нет доступа к заявкам.");
+            return "redirect:/login";
+        }
+
+        List<TourRequest> requests = tourRequestService.findAllNew();
+        model.addAttribute("requests", requests);
+        return "agentRequests";
+    }
+
+    // Создание клиента на основе заявки
+    @PostMapping("/createClient")
+    public String createClient(@RequestParam Long requestId, HttpSession session, RedirectAttributes redirectAttributes) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser == null || !"AGENT".equalsIgnoreCase(loggedInUser.getRole())) {
+            redirectAttributes.addFlashAttribute("errorMessage", "У вас нет прав для выполнения этого действия.");
+            return "redirect:/login";
+        }
+
+        TourRequest request = tourRequestService.findById(requestId);
+        if (request == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Заявка не найдена.");
+            return "redirect:/agent/requests";
+        }
+
+        // Создание нового пользователя
+        User newUser = new User();
+        newUser.setUsername(request.getUserEmail());
+        newUser.setPassword(generateRandomPassword());
+        newUser.setRole("USER");
+        userService.save(newUser);
+
+        // Создание бронирования
+        Tour tour = tourService.findById(request.getTourId());
+        bookingService.bookTour(newUser, tour);
+
+        // Обновление статуса заявки
+        request.setStatus("Обработана");
+        tourRequestService.save(request);
+
+        redirectAttributes.addFlashAttribute("successMessage", "Клиент создан и тур забронирован!");
+        return "redirect:/agent/requests";
+    }
+
+    // Генерация случайного пароля
+    private String generateRandomPassword() {
+        return UUID.randomUUID().toString().substring(0, 8);
+    }
+
+    // Инициализация биндеров
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.setDisallowedFields("images");
     }
 }
-
