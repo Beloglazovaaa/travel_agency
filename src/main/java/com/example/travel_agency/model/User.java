@@ -1,8 +1,7 @@
-// User.java
-
 package com.example.travel_agency.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -28,14 +27,22 @@ public class User {
     @Column(nullable = false)
     private String role; // Например, "ADMIN", "AGENT", "USER"
 
-    // Конструкторы
+    @NotBlank(message = "Email не может быть пустым")
+    @Email(message = "Введите корректный email")
+    @Column(nullable = false, unique = true)
+    private String email;
+
+    // Конструкторы, геттеры и сеттеры
     public User() {
+        // Устанавливаем роль по умолчанию в конструкторе
+        this.role = "USER"; // Установить роль по умолчанию
     }
 
-    public User(String username, String password, String role) {
+    public User(String username, String password, String role, String email) {
         this.username = username;
         this.password = password;
         this.role = role;
+        this.email = email;
     }
 
     // Геттеры и сеттеры
@@ -69,5 +76,13 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

@@ -5,6 +5,7 @@ import com.example.travel_agency.model.Tour;
 import com.example.travel_agency.model.User;
 import com.example.travel_agency.service.BookingService;
 import com.example.travel_agency.service.TourService;
+import com.example.travel_agency.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,6 +24,16 @@ public class UserController {
 
     @Autowired
     private BookingService bookingService;
+
+    @Autowired
+    private UserService userService;
+
+    @PostMapping("/register")
+    public String registerUser(@ModelAttribute User user) {
+        // Роль по умолчанию будет установлена в UserService, если не указана
+        userService.save(user);
+        return "redirect:/success"; // Перенаправление на страницу успешной регистрации
+    }
 
     // Просмотр доступных туров
     @GetMapping("/tours")
@@ -52,5 +63,6 @@ public class UserController {
         redirectAttributes.addFlashAttribute("successMessage", "Тур успешно забронирован");
         return "redirect:/user/bookings";
     }
+
 }
 

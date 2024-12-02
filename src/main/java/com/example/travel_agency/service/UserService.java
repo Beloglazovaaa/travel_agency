@@ -19,6 +19,11 @@ public class UserService {
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public void save(User user) {
+        // Если роль не установлена, установим по умолчанию как "USER"
+        if (user.getRole() == null || user.getRole().isEmpty()) {
+            user.setRole("USER");
+        }
+
         // Убедимся, что роль валидна
         if (!List.of("USER", "AGENT", "ADMIN").contains(user.getRole())) {
             throw new IllegalArgumentException("Неверная роль пользователя");
@@ -28,7 +33,6 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
     }
-
 
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);
@@ -47,9 +51,4 @@ public class UserService {
     public void deleteUserById(Long id) {
         userRepository.deleteById(id);
     }
-
-
-
-
-
 }

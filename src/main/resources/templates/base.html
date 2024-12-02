@@ -184,6 +184,7 @@
   </div>
 
   <!-- Register Modal -->
+  <!-- Register Modal -->
   <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -193,7 +194,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
           </div>
           <div class="modal-body">
-            <!-- Сюда добавим сообщения -->
+            <!-- Сообщения об ошибках или успехах -->
             <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
             <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
 
@@ -203,16 +204,19 @@
               <input type="text" class="form-control" id="registerUsername" name="username" minlength="4" required>
               <div class="invalid-feedback">Имя пользователя должно быть не менее 4 символов</div>
             </div>
+
             <div class="mb-3">
               <label for="registerEmail" class="form-label">Email</label>
               <input type="email" class="form-control" id="registerEmail" name="email" required>
               <div class="invalid-feedback">Введите корректный email</div>
             </div>
+
             <div class="mb-3">
               <label for="registerPassword" class="form-label">Пароль</label>
               <input type="password" class="form-control" id="registerPassword" name="password" minlength="6" required>
               <div class="invalid-feedback">Пароль должен быть не менее 6 символов</div>
             </div>
+
             <div class="mb-3">
               <label for="registerConfirmPassword" class="form-label">Подтверждение пароля</label>
               <input type="password" class="form-control" id="registerConfirmPassword" name="confirmPassword" required>
@@ -263,6 +267,20 @@
     });
   });
 </script>
+
+<script>
+  const registerForm = document.querySelector('form[th\\:action="@{/register}"]');
+  registerForm.addEventListener('submit', function (event) {
+    const password = document.getElementById('registerPassword').value;
+    const confirmPassword = document.getElementById('registerConfirmPassword').value;
+
+    if (password !== confirmPassword) {
+      event.preventDefault(); // Отменяем отправку формы
+      alert('Пароли не совпадают');
+    }
+  });
+</script>
+
 
 <script th:inline="javascript">
   document.addEventListener('DOMContentLoaded', function() {
