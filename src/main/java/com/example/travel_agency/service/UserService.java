@@ -19,17 +19,9 @@ public class UserService {
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public void save(User user) {
-        // Если роль не установлена, установим по умолчанию как "USER"
-        if (user.getRole() == null || user.getRole().isEmpty()) {
-            user.setRole("USER");
-        }
-
-        // Убедимся, что роль валидна
         if (!List.of("USER", "AGENT", "ADMIN").contains(user.getRole())) {
             throw new IllegalArgumentException("Неверная роль пользователя");
         }
-
-        // Хешируем пароль и сохраняем
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
     }
@@ -50,5 +42,20 @@ public class UserService {
     // Удаление пользователя по ID
     public void deleteUserById(Long id) {
         userRepository.deleteById(id);
+    }
+
+
+    // Обновление роли пользователя
+    public void updateUserRole(Long id, String role) {
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+        user.setRole(role);  // Обновляем роль
+        userRepository.save(user);  // Сохраняем изменения в базе данных
+    }
+
+    // Другие методы (например, для блокировки/разблокировки)
+    public void toggleBan(Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+        user.setBanned(!user.isBanned());  // Переключаем статус бана
+        userRepository.save(user);
     }
 }

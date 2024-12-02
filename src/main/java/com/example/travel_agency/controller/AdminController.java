@@ -1,7 +1,9 @@
 package com.example.travel_agency.controller;
 
 import com.example.travel_agency.model.Tour;
+import com.example.travel_agency.model.User;
 import com.example.travel_agency.service.TourService;
+import com.example.travel_agency.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -41,5 +43,27 @@ public class AdminController {
         tourService.save(tour);
         redirectAttributes.addFlashAttribute("successMessage", "Тур успешно сохранён");
         return "redirect:/admin/tours";
+    }
+
+    @Autowired
+    private UserService userService;
+
+    @GetMapping("/users")
+    public String getAllUsers(Model model) {
+        List<User> users = userService.getAllUsers();
+        model.addAttribute("users", users);
+        return "admin/users"; // Страница с пользователями
+    }
+
+    @PostMapping("/update-role/{id}")
+    public String updateRole(@PathVariable Long id, @RequestParam String role) {
+        userService.updateUserRole(id, role);
+        return "redirect:/admin/users"; // Перенаправление на страницу пользователей
+    }
+
+    @PostMapping("/toggle-ban/{id}")
+    public String toggleBan(@PathVariable Long id) {
+        userService.toggleBan(id);
+        return "redirect:/admin/users"; // Перенаправление обратно на страницу пользователей
     }
 }
