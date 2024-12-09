@@ -41,6 +41,11 @@
           <li class="nav-item">
             <a class="nav-link" th:href="@{/tours}" th:classappend="${page == 'tours'} ? 'active' : ''">Туры</a>
           </li>
+
+          <li class="nav-item">
+            <a class="nav-link" th:href="@{/about-author}" th:classappend="${page == 'about-author'} ? 'active' : ''">Об авторе</a>
+          </li>
+
           <!-- Пользовательские ссылки -->
           <li class="nav-item" th:if="${loggedInUser != null and loggedInUser.role == 'AGENT'}">
             <a class="nav-link" th:href="@{/agent/requests}" th:classappend="${page == 'agentRequests'} ? 'active' : ''">Заявки</a>

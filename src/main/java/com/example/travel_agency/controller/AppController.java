@@ -329,6 +329,14 @@ public class AppController {
         return "touristInfo";
     }
 
+    @GetMapping("/about-author")
+    public String aboutAuthorPage(HttpSession session, Model model) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        model.addAttribute("loggedInUser", loggedInUser);
+        return "aboutAuthor"; // Имя файла страницы без расширения (например, "about_author_page.html").
+    }
+
+
 
 
 
