@@ -13,6 +13,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Custom style to apply the font globally -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+    </style>
 </head>
 <body>
 <header th:fragment="header">
@@ -20,7 +27,7 @@
         <div class="container d-flex align-items-center">
             <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
                 <img th:src="@{/images/logo.webp}" alt="Логотип" height="40">
-                <span class="ms-2 fw-bold" style="font-family: 'Roboto', sans-serif; font-size: 1.5rem; color: #007BFF;">RusWay</span>
+                <span class="ms-2 fw-bold" style="font-size: 1.5rem; color: #007BFF;">RusWay</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Переключить навигацию">
@@ -52,8 +59,9 @@
             <img th:src="@{/images/capybara-tourist.jpg}" alt="Автор" class="img-fluid rounded-circle">
         </div>
         <div class="col-lg-6">
-            <h2 class="fw-bold mb-3" style="font-family: 'Roboto', sans-serif; color: #007BFF;">Об авторе</h2>
-            <p class="lead">Меня зовут Анастасия Белоглазова, я студентка Финансового университета, факультет информационных технологий и анализа больших данных, группа ПИ22-3. Моя цель — использовать современные технологии для создания эффективных и доступных решений.</p>
+            <h3 class="fw-bold mb-3" style="color: #007BFF;">Об авторе</h3>
+            <p class="lead">Меня зовут Анастасия Белоглазова, я студентка Финансового университета, факультет информационных технологий и анализа больших данных, группа ПИ22-3. В рамках проекта я разработала информационно-справочную систему для турагентства.</p>
+
             <h4 class="fw-bold">Контактные данные</h4>
             <ul>
                 <li>Электронная почта: <a href="mailto:224987@edu.fa.ru">224987@edu.fa.ru</a></li>
@@ -61,11 +69,20 @@
             </ul>
 
             <h4 class="fw-bold">Опыт работы с технологиями</h4>
-            <p>В ходе работы над этим проектом я использовала современные технологии и подходы, включая веб-разработку с использованием Thymeleaf, Bootstrap, а также работала с базами данных и интеграцией различных систем для повышения эффективности взаимодействия с пользователями.</p>
+            <p>В проекте я использовала следующие технологии:</p>
+            <ul>
+                <li>Java – для разработки серверной логики и обработки данных.</li>
+                <li>SQL – для работы с базой данных, написания запросов и оптимизации.</li>
+                <li>JPA и Hibernate – для объектно-ориентированного взаимодействия с базой данных, автоматического преобразования объектов в SQL и управления транзакциями.</li>
+                <li>RESTful API – для создания веб-сервисов и взаимодействия с клиентами через HTTP-запросы.</li>
+                <li>MySQL – в качестве базы данных для хранения данных проекта.</li>
+                <li>Spring Boot – для быстрой разработки серверной части, реализации RESTful сервисов и управления зависимостями.</li>
+            </ul>
+           <p> Эти технологии обеспечили эффективную и удобную реализацию всех функциональных возможностей проекта.</p>
 
             <h4 class="fw-bold">Даты работы над проектом</h4>
-            <p>Начало работы: Январь 2024 года</p>
-            <p>Завершение работы: Декабрь 2024 года</p>
+            <p><strong>Начало работы:</strong> Сентябрь 2024 года</p>
+            <p><strong>Завершение работы:</strong> Декабрь 2024 года</p>
         </div>
     </section>
 </main>
