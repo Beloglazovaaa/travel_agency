@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{base :: head('Туры')}"></head>
+<body>
+<header th:replace="~{base :: header}">
+  <link th:href="@{/css/style.css}" rel="stylesheet">
+</header>
+<main class="container my-4">
+  <h1 class="text-center my-4">Наши Туры</h1>
+
+  <div class="search-filters my-4 p-3 bg-light rounded shadow-sm d-flex justify-content-between align-items-center">
+    <form th:action="@{/tours}" method="get" class="row g-3 align-items-center w-100">
+      <!-- Поле ввода города -->
+      <div class="col">
+        <label for="cityInput" class="form-label visually-hidden">Город</label>
+        <input type="text" id="cityInput" name="city" class="form-control text-center" placeholder="Город" th:value="${city}">
+      </div>
+
+      <!-- Поле ввода даты -->
+      <div class="col">
+        <label for="dateInput" class="form-label visually-hidden">Дата вылета</label>
+        <input type="date" id="dateInput" name="startDate" class="form-control text-center" th:value="${startDate}">
+      </div>
+
+      <!-- Поле ввода длительности -->
+      <div class="col">
+        <label for="durationInput" class="form-label visually-hidden">Длительность</label>
+        <input type="text" id="durationInput" name="duration" class="form-control text-center" placeholder="Количество дней" th:value="${duration}">
+      </div>
+
+      <!-- Поле ввода количества человек -->
+      <div class="col">
+        <label for="peopleInput" class="form-label visually-hidden">Количество человек</label>
+        <input type="text" id="peopleInput" name="people" class="form-control text-center" placeholder="Количество человек" th:value="${people}">
+      </div>
+
+      <!-- Кнопка поиска -->
+      <div class="col">
+        <button type="submit" class="btn btn-primary w-100">Поиск</button>
+      </div>
+    </form>
+  </div>
+
+
+
+
+  <!-- Список туров -->
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    <div class="col" th:each="tour : ${listTours}">
+      <div class="card h-100 shadow-sm">
+        <img th:src="@{'/uploads/' + ${tour.images != null && tour.images.size() > 0 ? tour.images[0] : 'default.jpg'}}"
+             class="card-img-top" th:alt="${tour.name}">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title" th:text="${tour.name}"></h5>
+          <p class="card-text text-truncate" th:text="${tour.description}"></p>
+          <p><strong>Цена:</strong> <span th:text="${tour.pricePerPerson} + ' ₽'"></span></p>
+          <p><strong>Места:</strong> <span th:text="${tour.availableSeats}"></span></p>
+          <a th:href="@{/tours/{id}(id=${tour.id})}" class="btn btn-primary mt-auto">Подробнее</a>
+          <div class="mt-2" th:if="${loggedInUser != null and (loggedInUser.role == 'ADMIN' or loggedInUser.role == 'AGENT')}">
+            <button class="btn btn-warning me-2" data-bs-toggle="modal" th:attr="data-bs-target='#editTourModal_' + ${tour.id}">Редактировать</button>
+            <button class="btn btn-danger" data-bs-toggle="modal" th:attr="data-bs-target='#deleteTourModal_' + ${tour.id}">Удалить</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Модальное окно редактирования тура -->
+      <div class="modal fade" th:id="'editTourModal_' + ${tour.id}" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form th:action="@{/saveTour}" method="post">
+              <div class="modal-header">
+                <h5 class="modal-title">Редактировать тур</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <input type="hidden" name="id" th:value="${tour.id}">
+                <div class="mb-3">
+                  <label class="form-label">Название</label>
+                  <input type="text" class="form-control" name="name" th:value="${tour.name}" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Описание</label>
+                  <textarea class="form-control" name="description" required th:text="${tour.description}"></textarea>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Цена</label>
+                  <input type="number" class="form-control" name="pricePerPerson" th:value="${tour.pricePerPerson}" required>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Модальное окно удаления тура -->
+      <div class="modal fade" th:id="'deleteTourModal_' + ${tour.id}" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form th:action="@{/deleteTour}" method="post">
+              <div class="modal-header">
+                <h5 class="modal-title">Удалить тур</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <p>Вы уверены, что хотите удалить этот тур?</p>
+                <input type="hidden" name="id" th:value="${tour.id}">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="submit" class="btn btn-danger">Удалить</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Модальное окно добавления тура -->
+<div class="modal fade" id="addTourModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form th:action="@{/saveTour}" method="post">
+        <div class="modal-header">
+          <h5 class="modal-title">Добавить тур</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Название</label>
+            <input type="text" class="form-control" name="name" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Описание</label>
+            <textarea class="form-control" name="description" required></textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Цена</label>
+            <input type="number" class="form-control" name="pricePerPerson" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+          <button type="submit" class="btn btn-success">Добавить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<footer th:replace="~{base :: footer}"></footer>
+</body>
+</html>

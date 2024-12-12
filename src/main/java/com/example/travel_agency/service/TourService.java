@@ -122,4 +122,8 @@ public class TourService {
         return tourRepository.findAll();
     }
 
+    public List<Tour> getAllTours() {
+        return tourRepository.findAll(); // Получаем все туры
+    }
+
 }

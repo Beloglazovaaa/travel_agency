@@ -11,7 +11,10 @@
     <div class="col-md-8">
       <!-- Детали тура -->
       <p><strong>Цена:</strong> <span th:text="${tour.pricePerPerson} + ' ₽ на человека'"></span></p>
+      <p><strong>Дата начала:</strong> <span th:text="${tour.startDate}"></span></p>
+      <p><strong>Дата окончания:</strong> <span th:text="${tour.endDate}"></span></p>
       <p><strong>Длительность:</strong> <span th:text="${tour.durationDays} + ' дней'"></span></p>
+      <p><strong>Рейтинг:</strong> <span th:text="${averageRating} + ' / 5.0'"></span></p>
       <img th:src="@{'/uploads/' + ${tour.images[0]}}" class="img-fluid mb-4" alt="Фото тура">
       <h3>Описание тура</h3>
       <p th:text="${tour.description}"></p>

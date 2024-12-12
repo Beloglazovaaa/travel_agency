@@ -35,6 +35,8 @@ public interface TourRepository extends JpaRepository<Tour, Long> {
     // Поиск доступных туров для пользователей
     List<Tour> findByAvailableSeatsGreaterThan(int availableSeats);
 
+
+
     
 }
 

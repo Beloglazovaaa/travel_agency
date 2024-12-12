@@ -37,11 +37,12 @@ public class UserController {
 
     // Просмотр доступных туров
     @GetMapping("/tours")
-    public String viewAvailableTours(Model model) {
-        List<Tour> tours = tourService.listAvailableTours();
-        model.addAttribute("listTours", tours);
-        model.addAttribute("page", "userTours");
-        return "userTours"; // шаблон userTours.html
+    public String getTours(Model model) {
+        // Получаем список туров
+        List<Tour> tours = tourService.getAllTours(); // Метод для получения туров из базы данных
+        model.addAttribute("listTours", tours); // Передаем данные в модель
+
+        return "user/tours"; // Страница туров
     }
 
     // Просмотр своих бронирований

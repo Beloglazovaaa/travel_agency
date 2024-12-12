@@ -7,8 +7,10 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.security.Principal;
+import java.time.Duration;
 import java.util.List;
 
 @Controller
@@ -41,5 +43,22 @@ public class TourController {
         // Реализуйте получение пользователя из Principal
         return new User(); // Пример
     }
+
+    @GetMapping("/tours/info/{id}")
+    public String getTourDetails(@PathVariable("id") Long tourId, Model model) {
+        // Получаем данные о туре
+        Tour tour = tourService.findById(tourId);
+
+        // Средний рейтинг уже есть в поле rating
+        double averageRating = tour.getRating();
+
+        model.addAttribute("tour", tour);
+        model.addAttribute("averageRating", averageRating);
+
+        return "tourDetails"; // Страница с подробностями тура
+    }
+
+
+
 }
 
